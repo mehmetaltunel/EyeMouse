@@ -1,0 +1,26 @@
+{
+  "camera": {
+    "index": 1,
+    "width": 640,
+    "height": 480,
+    "fps": 30
+  },
+  "tracking": {
+    "ear_threshold": 0.21,
+    "ear_consecutive_frames": 2,
+    "blink_cooldown": 0.35
+  },
+  "mouse": {
+    "sensitivity": 4.0,
+    "smoothing_samples": 5,
+    "dead_zone": 0.015,
+    "acceleration_curve": 1.5
+  },
+  "calibration": {
+    "points_count": 9,
+    "point_duration": 2.0,
+    "margin_percent": 0.1
+  },
+  "debug_mode": false,
+  "show_landmarks": true
+}
