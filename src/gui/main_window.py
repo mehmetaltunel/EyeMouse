@@ -1,6 +1,6 @@
 """
-Eye Mouse - Professional GUI Application
-PyQt6-based cross-platform interface
+Göz Fare - Profesyonel GUI Uygulaması
+PyQt6 tabanlı çapraz platform arayüzü
 """
 
 import sys
@@ -182,7 +182,7 @@ class CalibrationOverlay(QWidget):
         self.info_panel.setStyleSheet("background-color: rgba(0,0,0,0.7); border-radius: 8px;")
         
         # Instruction
-        self.instruction = QLabel("Look at the target circle", self.info_panel)
+        self.instruction = QLabel("Hedef daireye bakın", self.info_panel)
         self.instruction.setStyleSheet("""
             color: #fff;
             font-size: 16px;
@@ -197,7 +197,7 @@ class CalibrationOverlay(QWidget):
         self.progress_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
         # Cancel button
-        self.cancel_btn = QPushButton("Cancel (ESC)", self.info_panel)
+        self.cancel_btn = QPushButton("İptal (ESC)", self.info_panel)
         self.cancel_btn.setStyleSheet("""
             QPushButton {
                 background-color: #333;
@@ -277,26 +277,26 @@ class CalibrationOverlay(QWidget):
             dist_str = ""
             if hasattr(self.current_gaze, 'distance'):
                  d = self.current_gaze.distance
-                 dist_str = f" | Dist: {d:.2f}"
-                 if d < 0.8: dist_str += " (Close)"
-                 elif d > 1.2: dist_str += " (Far)"
+                 dist_str = f" | Mesafe: {d:.2f}"
+                 if d < 0.8: dist_str += " (Yakın)"
+                 elif d > 1.2: dist_str += " (Uzak)"
             
-            coord_str = f"Gaze: ({gx:.2f}, {gy:.2f}){dist_str}"
+            coord_str = f"Bakış: ({gx:.2f}, {gy:.2f}){dist_str}"
         else:
-            coord_str = "No gaze detected"
+            coord_str = "Bakış algılanamadı"
         
         if quality == GazeQuality.NO_GAZE:
-            self.progress_label.setText(f"[{current}/{total}] Face not detected\n{coord_str}")
+            self.progress_label.setText(f"[{current}/{total}] Yüz algılanamadı\n{coord_str}")
             self.progress_label.setStyleSheet("color: #e63946; font-size: 13px; background: transparent;")
         elif quality == GazeQuality.OFF_TARGET:
-            self.progress_label.setText(f"[{current}/{total}] Look at the circle!\n{coord_str}")
+            self.progress_label.setText(f"[{current}/{total}] Daireye bak!\n{coord_str}")
             self.progress_label.setStyleSheet("color: #fca311; font-size: 13px; background: transparent;")
         elif quality == GazeQuality.NEAR_TARGET:
-            self.progress_label.setText(f"[{current}/{total}] Getting closer...\n{coord_str}")
+            self.progress_label.setText(f"[{current}/{total}] Yaklaşıyorsun...\n{coord_str}")
             self.progress_label.setStyleSheet("color: #00b4d8; font-size: 13px; background: transparent;")
         else:  # ON_TARGET
             pct = int(progress * 100)
-            self.progress_label.setText(f"[{current}/{total}] Hold steady! {pct}%\n{coord_str}")
+            self.progress_label.setText(f"[{current}/{total}] Sabit tut! %{pct}\n{coord_str}")
             self.progress_label.setStyleSheet("color: #00d26a; font-size: 13px; font-weight: bold; background: transparent;")
         
         self.update()
@@ -423,7 +423,7 @@ class MainWindow(QMainWindow):
         self.hotkeys_worker.start()
         
     def _setup_ui(self):
-        self.setWindowTitle("Eye Mouse")
+        self.setWindowTitle("Göz Fare")
         self.setFixedSize(500, 700)  # Increased size further for comfort
         
         # Dark theme
@@ -436,12 +436,12 @@ class MainWindow(QMainWindow):
         layout.setContentsMargins(16, 16, 16, 16)
         
         # Header
-        header = QLabel("Eye Mouse")
+        header = QLabel("Göz Fare")
         header.setObjectName("header")
         header.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(header)
         
-        tagline = QLabel("Gaze-controlled cursor")
+        tagline = QLabel("Bakışla kontrol edilen imleç")
         tagline.setObjectName("tagline")
         tagline.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(tagline)
@@ -450,7 +450,7 @@ class MainWindow(QMainWindow):
         
         # Camera selection
         cam_layout = QHBoxLayout()
-        cam_layout.addWidget(QLabel("Camera:"))
+        cam_layout.addWidget(QLabel("Kamera:"))
         
         self.camera_combo = QComboBox()
         self.camera_combo.setObjectName("secondaryBtn") # Use same style
@@ -465,17 +465,17 @@ class MainWindow(QMainWindow):
         self.camera_view.setObjectName("cameraView")
         self.camera_view.setFixedSize(348, 196)
         self.camera_view.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.camera_view.setText("Initializing camera...")
+        self.camera_view.setText("Kamera başlatılıyor...")
         layout.addWidget(self.camera_view, alignment=Qt.AlignmentFlag.AlignCenter)
         
         # Status panel
-        status_group = QGroupBox("Status")
+        status_group = QGroupBox("Durum")
         status_layout = QVBoxLayout(status_group)
         status_layout.setSpacing(6)
         
         # Face detection
         row1 = QHBoxLayout()
-        row1.addWidget(QLabel("Face Detection"))
+        row1.addWidget(QLabel("Yüz Algılama"))
         self.face_indicator = QLabel("--")
         self.face_indicator.setObjectName("indicator")
         row1.addWidget(self.face_indicator)
@@ -484,7 +484,7 @@ class MainWindow(QMainWindow):
         
         # EAR values
         row2 = QHBoxLayout()
-        row2.addWidget(QLabel("Eye Openness"))
+        row2.addWidget(QLabel("Göz Açıklığı"))
         self.ear_label = QLabel("L: --  R: --")
         self.ear_label.setObjectName("indicator")
         row2.addWidget(self.ear_label)
@@ -493,7 +493,7 @@ class MainWindow(QMainWindow):
         
         # Last action
         row3 = QHBoxLayout()
-        row3.addWidget(QLabel("Last Action"))
+        row3.addWidget(QLabel("Son İşlem"))
         self.action_label = QLabel("--")
         self.action_label.setObjectName("action")
         row3.addWidget(self.action_label)
@@ -502,8 +502,8 @@ class MainWindow(QMainWindow):
         
         # Calibration status
         row4 = QHBoxLayout()
-        row4.addWidget(QLabel("Calibration"))
-        self.cal_label = QLabel("Not calibrated")
+        row4.addWidget(QLabel("Kalibrasyon"))
+        self.cal_label = QLabel("Kalibre edilmedi")
         self.cal_label.setObjectName("indicator")
         row4.addWidget(self.cal_label)
         row4.addStretch()
@@ -511,8 +511,8 @@ class MainWindow(QMainWindow):
         
         # Tracking Info (Coords + Distance)
         row5 = QHBoxLayout()
-        row5.addWidget(QLabel("Tracking"))
-        self.track_label = QLabel("Pos: --  Dist: --")
+        row5.addWidget(QLabel("Takip"))
+        self.track_label = QLabel("Konum: --  Mesafe: --")
         self.track_label.setObjectName("indicator")
         row5.addWidget(self.track_label)
         row5.addStretch()
@@ -521,7 +521,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(status_group)
         
         # Sensitivity slider
-        sens_group = QGroupBox("Sensitivity")
+        sens_group = QGroupBox("Hassasiyet")
         sens_layout = QVBoxLayout(sens_group)
         
         self.sens_slider = QSlider(Qt.Orientation.Horizontal)
@@ -541,12 +541,12 @@ class MainWindow(QMainWindow):
         # Control buttons
         btn_layout = QHBoxLayout()
         
-        self.calibrate_btn = QPushButton("Calibrate (C)")
+        self.calibrate_btn = QPushButton("Kalibre Et (C)")
         self.calibrate_btn.setObjectName("secondaryBtn")
         self.calibrate_btn.clicked.connect(self._start_calibration)
         btn_layout.addWidget(self.calibrate_btn)
         
-        self.toggle_btn = QPushButton("Start (M)")
+        self.toggle_btn = QPushButton("Başlat (M)")
         self.toggle_btn.setObjectName("primaryBtn")
         self.toggle_btn.setCheckable(True)
         self.toggle_btn.clicked.connect(self._toggle_mouse)
@@ -555,7 +555,7 @@ class MainWindow(QMainWindow):
         layout.addLayout(btn_layout)
         
         # Footer info
-        footer = QLabel("Left blink = Left click  |  Right blink = Right click")
+        footer = QLabel("Sol göz kırpma = Sol tık  |  Sağ göz kırpma = Sağ tık")
         footer.setObjectName("footer")
         footer.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(footer)
@@ -713,23 +713,23 @@ class MainWindow(QMainWindow):
         self.camera_view.setPixmap(QPixmap.fromImage(scaled))
         
         # Update status labels
-        self.face_indicator.setText("Detected" if face_found else "Searching...")
+        self.face_indicator.setText("Algılandı" if face_found else "Aranıyor...")
         self.face_indicator.setStyleSheet(
             f"color: {'#00d26a' if face_found else '#e63946'}; font-weight: 500;"
         )
         
         if gaze_data:
             gx, gy = gaze_data.position
-            dist_str = "OK"
+            dist_str = "İyi"
             d = 1.0
             if hasattr(gaze_data, 'distance'):
                 d = gaze_data.distance
-                if d < 0.8: dist_str = "Close"
-                elif d > 1.2: dist_str = "Far"
+                if d < 0.8: dist_str = "Yakın"
+                elif d > 1.2: dist_str = "Uzak"
             
-            self.track_label.setText(f"Pos: ({gx:.2f}, {gy:.2f})  Dist: {d:.2f} ({dist_str})")
+            self.track_label.setText(f"Konum: ({gx:.2f}, {gy:.2f})  Mesafe: {d:.2f} ({dist_str})")
         else:
-             self.track_label.setText("Pos: --  Dist: --")
+             self.track_label.setText("Konum: --  Mesafe: --")
             
         if ear:
             self.ear_label.setText(f"L: {ear[0]:.2f}  R: {ear[1]:.2f}")
@@ -749,17 +749,17 @@ class MainWindow(QMainWindow):
                 
     def _on_blink(self, blink_type):
         if blink_type == BlinkType.LEFT:
-            self.action_label.setText("Left Click")
+            self.action_label.setText("Sol Tık")
             self.action_label.setStyleSheet("color: #00d26a;")
             if self.mouse_controller.is_enabled():
                 self.mouse_controller.click('left')
         elif blink_type == BlinkType.RIGHT:
-            self.action_label.setText("Right Click")
+            self.action_label.setText("Sağ Tık")
             self.action_label.setStyleSheet("color: #fca311;")
             if self.mouse_controller.is_enabled():
                 self.mouse_controller.click('right')
         elif blink_type == BlinkType.BOTH:
-            self.action_label.setText("Double Click")
+            self.action_label.setText("Çift Tık")
             self.action_label.setStyleSheet("color: #e63946;")
             if self.mouse_controller.is_enabled():
                 self.mouse_controller.double_click()
@@ -772,15 +772,15 @@ class MainWindow(QMainWindow):
         self.mouse_controller.set_enabled(enabled)
         
         if enabled:
-            self.toggle_btn.setText("Stop (M)")
+            self.toggle_btn.setText("Durdur (M)")
             self.toggle_btn.setChecked(True)
         else:
-            self.toggle_btn.setText("Start (M)")
+            self.toggle_btn.setText("Başlat (M)")
             self.toggle_btn.setChecked(False)
             
     def _stop_mouse(self):
         self.mouse_controller.set_enabled(False)
-        self.toggle_btn.setText("Start (M)")
+        self.toggle_btn.setText("Başlat (M)")
         self.toggle_btn.setChecked(False)
         
     def _toggle_debug(self):
@@ -824,10 +824,10 @@ class MainWindow(QMainWindow):
         
     def _update_calibration_status(self):
         if self.calibrator.is_calibrated():
-            self.cal_label.setText("Ready")
+            self.cal_label.setText("Hazır")
             self.cal_label.setStyleSheet("color: #00d26a; font-weight: 500;")
         else:
-            self.cal_label.setText("Not calibrated")
+            self.cal_label.setText("Kalibre edilmedi")
             self.cal_label.setStyleSheet("color: #888; font-weight: 500;")
             
     def closeEvent(self, event):
