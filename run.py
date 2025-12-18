@@ -18,16 +18,9 @@ if __name__ == "__main__":
         import traceback
         error_msg = f"HATA OLUSTU:\n{str(e)}\n\nDETAYLAR:\n{traceback.format_exc()}"
         
-        # Log dosyasini uygulamanin yanina kaydet
-        if getattr(sys, 'frozen', False):
-            # Exe ise exe'nin yani
-            application_path = os.path.dirname(sys.executable)
-            # macOS .app icindeyse bozulabilir, ama kullanici bunu istiyor
-        else:
-            # Script ise script yani
-            application_path = os.path.dirname(os.path.abspath(__file__))
-            
-        log_path = os.path.join(application_path, "Cyclops_Error_Log.txt")
+        # Log dosyasini kullanici ana dizinine kaydet (En garanti yer - /Users/kullanici/Cyclops_Log.txt)
+        home_path = os.path.expanduser("~")
+        log_path = os.path.join(home_path, "Cyclops_Log.txt")
         
         # Hata dosyasina yaz
         with open(log_path, "w", encoding="utf-8") as f:
@@ -37,7 +30,7 @@ if __name__ == "__main__":
         try:
             from PyQt6.QtWidgets import QApplication, QMessageBox
             if QApplication.instance():
-                QMessageBox.critical(None, "Kritik Hata", f"Uygulama coktu!\nHata raporu masaüstüne kaydedildi:\n{log_path}\n\nHata: {str(e)}")
+                QMessageBox.critical(None, "Kritik Hata", f"Uygulama coktu!\nHata raporu ana klasöre kaydedildi:\n{log_path}\n\nHata: {str(e)}")
         except:
             pass
         

@@ -12,7 +12,7 @@ block_cipher = None
 
 # MediaPipe ve OpenCV verilerini topla
 mediapipe_datas = collect_data_files('mediapipe')
-cv2_datas = collect_data_files('cv2')
+# cv2_datas = collect_data_files('cv2') # Headless surumde cakismayi onlemek icin kapattik
 
 a = Analysis(
     ['run.py'],
@@ -22,7 +22,7 @@ a = Analysis(
         ('src', 'src'),
         ('calibration.json', '.'),
         ('settings.json', '.'),
-    ] + mediapipe_datas + cv2_datas,
+    ] + mediapipe_datas,
     hiddenimports=[
         'mediapipe',
         'mediapipe.python',
@@ -38,7 +38,8 @@ a = Analysis(
     hooksconfig={},
     runtime_hooks=[],
     excludes=[
-        'PyQt5', 'tkinter', 'torch', 'tensorflow', 'matplotlib', 'scipy', 'sklearn'
+        'PyQt5', 'tkinter', 'torch', 'tensorflow', 'matplotlib', 'scipy', 'sklearn',
+        'cv2.cv2', 'opencv-python' 
     ],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,
