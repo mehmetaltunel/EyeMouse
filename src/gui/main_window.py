@@ -25,6 +25,7 @@ from src.core.blink_detector import BlinkDetector, BlinkType
 from src.core.mouse_controller import MouseController
 from src.core.calibration import Calibrator, GazeQuality
 from src.utils.camera_utils import get_available_cameras
+from src.version import __version__
 
 
 class CameraWorker(QThread):
@@ -423,7 +424,7 @@ class MainWindow(QMainWindow):
         self.hotkeys_worker.start()
         
     def _setup_ui(self):
-        self.setWindowTitle("Göz Fare")
+        self.setWindowTitle(f"Göz Fare v{__version__}")
         self.setFixedSize(500, 700)  # Increased size further for comfort
         
         # Dark theme
@@ -555,7 +556,7 @@ class MainWindow(QMainWindow):
         layout.addLayout(btn_layout)
         
         # Footer info
-        footer = QLabel("Sol göz kırpma = Sol tık  |  Sağ göz kırpma = Sağ tık")
+        footer = QLabel(f"v{__version__} | Sol göz kırpma = Sol tık  |  Sağ göz kırpma = Sağ tık")
         footer.setObjectName("footer")
         footer.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(footer)
