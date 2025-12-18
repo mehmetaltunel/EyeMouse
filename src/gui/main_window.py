@@ -26,8 +26,30 @@ from src.core.mouse_controller import MouseController
 from src.core.calibration import Calibrator, GazeQuality
 from src.utils.camera_utils import get_available_cameras
 from src.version import __version__
+from src.utils.camera_utils import get_available_cameras
+from src.version import __version__
 from src.utils.permissions import check_accessibility_permission, open_accessibility_settings
+from src.utils.updater import check_for_updates, open_url
 
+
+class UpdateWorker(QThread):
+    update_available = pyqtSignal(str, str) # version, url
+    no_update = pyqtSignal()
+    error = pyqtSignal(str)
+    
+    def __init__(self, current_version):
+        super().__init__()
+        self.current_version = current_version
+        
+    def run(self):
+        try:
+            has_update, new_ver, url = check_for_updates(self.current_version)
+            if has_update and new_ver and url:
+                self.update_available.emit(new_ver, url)
+            else:
+                self.no_update.emit()
+        except Exception as e:
+            self.error.emit(str(e))
 
 class CameraWorker(QThread):
     """Background camera processing thread"""
@@ -415,6 +437,9 @@ class MainWindow(QMainWindow):
         # Check permissions (macOS)
         self._check_permissions()
         
+        # Auto-check updates
+        QTimer.singleShot(2000, lambda: self.check_updates(manual=False))
+        
         # Start camera
         self.camera_worker = CameraWorker(self.config)
         self.camera_worker.frame_ready.connect(self._on_frame)
@@ -563,11 +588,22 @@ class MainWindow(QMainWindow):
         
         layout.addLayout(btn_layout)
         
+        # Footer layout
+        footer_layout = QHBoxLayout()
+        
+        # Update Button
+        self.btn_update = QPushButton("Güncellemeleri Kontrol Et")
+        self.btn_update.clicked.connect(lambda: self.check_updates(manual=True))
+        footer_layout.addWidget(self.btn_update)
+        
         # Footer info
         footer = QLabel(f"v{__version__} | Sol göz kırpma = Sol tık  |  Sağ göz kırpma = Sağ tık")
         footer.setObjectName("footer")
         footer.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(footer)
+        footer_layout.addWidget(footer)
+        
+        # Add footer layout to main layout
+        layout.addLayout(footer_layout)
         
         # Update calibration status
         self._update_calibration_status()
@@ -842,6 +878,47 @@ class MainWindow(QMainWindow):
             
             if msg.clickedButton() == btn_settings:
                 open_accessibility_settings()
+
+    def check_updates(self, manual=False):
+        """Guncelleme kontrolunu baslat"""
+        if manual:
+            self.btn_update.setText("Kontrol ediliyor...")
+            self.btn_update.setEnabled(False)
+            
+        self.update_worker = UpdateWorker(__version__)
+        self.update_worker.update_available.connect(self._on_update_available)
+        self.update_worker.no_update.connect(lambda: self._on_no_update(manual))
+        self.update_worker.error.connect(lambda e: self._on_update_error(e, manual))
+        self.update_worker.start()
+        
+    def _on_update_available(self, new_ver, url):
+        self.btn_update.setText("Güncelleme Var!")
+        self.btn_update.setEnabled(True)
+        
+        msg = QMessageBox(self)
+        msg.setWindowTitle("Güncelleme Mevcut")
+        msg.setText(f"Yeni bir sürüm bulundu: v{new_ver}\n\nİndirmek ister misin?")
+        msg.setIcon(QMessageBox.Icon.Information)
+        btn_download = msg.addButton("İndir", QMessageBox.ButtonRole.ActionRole)
+        msg.addButton("İptal", QMessageBox.ButtonRole.RejectRole)
+        msg.exec()
+        
+        if msg.clickedButton() == btn_download:
+            open_url(url)
+            
+    def _on_no_update(self, manual):
+        self.btn_update.setText("Güncellemeleri Kontrol Et")
+        self.btn_update.setEnabled(True)
+        
+        if manual:
+            QMessageBox.information(self, "Güncel", "Uygulama güncel.\nZaten son sürümü kullanıyorsun.")
+            
+    def _on_update_error(self, error, manual):
+        self.btn_update.setText("Hata")
+        self.btn_update.setEnabled(True)
+        # Otomatik kontrolde hata verirse kullaniciyi rahatsiz etme
+        if manual:
+            QMessageBox.warning(self, "Hata", f"Güncelleme kontrolü başarısız:\n{error}")
 
     def _on_calibration_complete(self):
         self.calibrator.save("calibration.json")
